@@ -1,0 +1,47 @@
+{
+  "name": "compression",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@gltf-transform/core": "^3.2.1",
+    "@gltf-transform/extensions": "^3.2.1",
+    "@gltf-transform/functions": "^3.2.1",
+    "@react-three/drei": "^9.66.1",
+    "@react-three/fiber": "^8.13.0",
+    "@types/three": "^0.151.0",
+    "axios": "^1.4.0",
+    "file-saver": "^2.0.5",
+    "fs": "^0.0.1-security",
+    "gltf-pipeline": "^4.1.0",
+    "obj2gltf": "^3.1.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "three": "^0.152.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "node-polyfill-webpack-plugin": "^2.0.1"
+  },
+  "proxy": "http://localhost:3001"
+}
