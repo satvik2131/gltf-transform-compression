@@ -30,10 +30,10 @@ app.post("/transform/model", async (req, res) => {
       return;
     }
 
-    //Input filepath
-    const path = files.file.filepath;
-    //Postman input
-    // const path = files[""].filepath;
+    //Input from Browser
+    // const path = files.file.filepath;
+    //Input from Postman
+    const path = files[""].filepath;
 
     // Configure I / O.
     const io = new NodeIO()
@@ -61,26 +61,21 @@ app.post("/transform/model", async (req, res) => {
     );
 
     //Sending buffer
-    const data = await io.writeBinary(document);
-    const mimetype = "application/octet-stream";
-    res.writeHead(200, {
-      "Content-Type": mimetype,
-      "Content-disposition": "attachment;filename=" + "model.glb",
-      "Content-Length": data.length,
-    });
-    res.end(Buffer.from(data, "binary"));
-
-    //Sending JSON
-    // const data = await io.writeJSON(document);
+    // const data = await io.writeBinary(document); // Creates Gltf Formatted Uint8 data
     // const mimetype = "application/octet-stream";
     // res.writeHead(200, {
     //   "Content-Type": mimetype,
-    //   "Content-disposition": "attachment;filename=" + "model.glb",
+    //   // "Content-disposition": "attachment;filename=" + "model.glb",
     //   "Content-Length": data.length,
     // });
-    // res.end(data);
+    // res.end(Buffer.from(data, "binary"));
 
-    //To save file in system
+    //Sending JSON
+    const data = await io.writeJSON(document);
+    log(data);
+    // res.json(JSON.stringify(data));
+
+    //Save As File
     // fs.writeFile('test2.glb', byteArrayGlb, (err) => {
     //     if (err) throw err;
     //     console.log('The file has been saved!');
