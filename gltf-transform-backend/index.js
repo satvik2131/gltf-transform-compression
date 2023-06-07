@@ -12,11 +12,14 @@ const {
   simplify,
 } = require("@gltf-transform/functions");
 const draco3d = require("draco3d");
-const fs = require("fs");
 const { MeshoptSimplifier } = require("meshoptimizer");
 const { log } = require("console");
 const cors = require("cors");
 const formidable = require("formidable");
+//converting glb to gltf (Modules)
+const gltfPipeline = require("gltf-pipeline");
+const fsExtra = require("fs-extra");
+const glbToGltf = gltfPipeline.glbToGltf;
 
 app.use(cors());
 
@@ -31,9 +34,9 @@ app.post("/transform/model", async (req, res) => {
     }
 
     //Input from Browser
-    // const path = files.file.filepath;
+    const path = files.file.filepath;
     //Input from Postman
-    const path = files[""].filepath;
+    // const path = files[""].filepath;
 
     // Configure I / O.
     const io = new NodeIO()
@@ -55,30 +58,37 @@ app.post("/transform/model", async (req, res) => {
       // Compress mesh geometry with Draco.
       draco(),
       //centers the model at the origin
-      center(),
+      center({ pivot: "below" }),
       //prduces fewer triangles and meshes
       simplify({ simplifier: MeshoptSimplifier, ratio: 0.2, error: 0.0001 })
     );
 
+    const data = await io.writeBinary(document); // Creates Gltf Formatted Uint8 data
+
     //Sending buffer
-    // const data = await io.writeBinary(document); // Creates Gltf Formatted Uint8 data
     // const mimetype = "application/octet-stream";
     // res.writeHead(200, {
     //   "Content-Type": mimetype,
     //   // "Content-disposition": "attachment;filename=" + "model.glb",
     //   "Content-Length": data.length,
     // });
-    // res.end(Buffer.from(data, "binary"));
+    // res.send(Buffer.from(data));
+
+    //GLB --> GLTF (Sending GLTF approach worked)
+    const gltf = await glbToGltf(data);
+    res.send(gltf.gltf);
+
+    // res.send(Buffer.from(data, "binary"));
 
     //Sending JSON
-    const data = await io.writeJSON(document);
-    log(data);
+    // const data = await io.writeJSON(document);
+    // log(data);
     // res.json(JSON.stringify(data));
 
     //Save As File
-    // fs.writeFile('test2.glb', byteArrayGlb, (err) => {
-    //     if (err) throw err;
-    //     console.log('The file has been saved!');
+    // fs.writeFile("test2.glb", buffer, (err) => {
+    //   if (err) throw err;
+    //   console.log("The file has been saved!");
     // });
   });
 });

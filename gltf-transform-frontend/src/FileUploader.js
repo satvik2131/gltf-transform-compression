@@ -4,7 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import axios from "axios";
 
 function FileUploader() {
-  const [buffer, setBuffer] = useState(null);
+  const [data, setData] = useState(null);
   const endpoint = "http://localhost:3001/transform/model";
 
   //Sends the file to backend and receives the compressed one
@@ -13,25 +13,22 @@ function FileUploader() {
     const formData = new FormData();
     formData.append("file", selectedFile);
 
-    const gltfBuffer = await axios.post(endpoint, formData);
-    setBuffer(gltfBuffer.data);
+    const data = await axios.post(endpoint, formData);
+    const gltf = data.data;
+    //JSON approach
+    setData(gltf);
+
+    //Buffer approach
+    // setData(gltfBuffer.data);
   };
 
-  if (buffer != null) {
+  if (data != null) {
     return (
       <Canvas>
-        <Model data={buffer} />
+        <Model model={data} />
       </Canvas>
     );
   }
-
-  // if (file != null) {
-  //     return (
-  //         <Canvas>
-  //             <Model url={file} name={name} />
-  //         </Canvas>
-  //     );
-  // }
 
   return (
     <div>
