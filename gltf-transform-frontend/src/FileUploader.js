@@ -24,7 +24,7 @@ function FileUploader() {
 
   if (data != null) {
     return (
-      <Canvas>
+      <Canvas camera={{ position: [0, 4, 20] }}>
         <Model model={data} />
       </Canvas>
     );

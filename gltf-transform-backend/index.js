@@ -91,7 +91,7 @@ app.post("/transform/model", async (req, res) => {
       // Compress mesh geometry with Draco.
       draco(),
       //centers the model at the origin
-      center({ pivot: "below" }),
+      center({ pivot: "center" }),
       //prduces fewer triangles and meshes
       simplify({ simplifier: MeshoptSimplifier, ratio: 0.2, error: 0.0001 })
     );
