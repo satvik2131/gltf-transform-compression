@@ -1,12 +1,8 @@
-import React, { useEffect } from "react";
-import { useLoader, useThree } from "@react-three/fiber";
+import React from "react";
+import { useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "@react-three/drei";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
-import { Buffer } from "buffer";
-import { WebIO } from "@gltf-transform/core";
-import { ObjectLoader } from "three";
-import { saveAs } from "file-saver";
 
 export function Model({ model }) {
   console.log(model);

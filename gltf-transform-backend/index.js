@@ -19,7 +19,7 @@ const formidable = require("formidable");
 //converting glb to gltf (Modules)
 const gltfPipeline = require("gltf-pipeline");
 const fsExtra = require("fs-extra");
-const { glbToGltf } = gltfPipeline;
+const { glbToGltf, gltfToGlb } = gltfPipeline;
 const { fbxToGlb, objToGlb } = require("./conversions");
 app.use(cors());
 
@@ -34,13 +34,14 @@ app.post("/transform/model", async (req, res) => {
     }
 
     //Input from Browser
-    // const path = files.file.filepath;
-    //Input from Postman
-    const path = files[""].filepath;
-    const name = files[""].originalFilename;
+    const path = files.file.filepath;
+    const name = files.file.originalFilename;
     const type = name.split(".")[1];
 
-    log("type:-", type);
+    //Input from Postman
+    // const path = files[""].filepath;
+    // const name = files[""].originalFilename;
+    // const type = name.split(".")[1];
 
     // Configure I / O.
     const io = new NodeIO()
@@ -50,34 +51,50 @@ app.post("/transform/model", async (req, res) => {
         "draco3d.encoder": await draco3d.createEncoderModule(), // Optional.
       });
 
+    log("type:-", type);
+
     //File conversion fbx -> glb , obj -> glb , gltf -> glb (NodeIo supports glb as an input)
     var glb;
     let document;
-    if (type === "glb") {
-      glb = await fsExtra.readFile(path);
-      document = await io.readBinary(glb);
-    } else if (type === "fbx") {
-      glb = await fbxToGlb(path);
-      document = await io.read(glb);
+    switch (type) {
+      case "glb":
+        glb = await fsExtra.readFile(path);
+        document = await io.readBinary(glb);
+        break;
+
+      case "fbx":
+        //FBX converter returns a path of converted glb file
+        glb = await fbxToGlb(path);
+        document = await io.readBinary(glb);
+        break;
+
+      case "obj":
+        glb = await objToGlb(path);
+        document = await io.readBinary(glb);
+        break;
+
+      case "gltf":
+        const gltf = fsExtra.readJSONSync(path);
+        glb = await gltfToGlb(gltf);
+        break;
     }
 
     //converting gltf to buffer
     // Read.
-    // let document = await io.readBinary(glb); // → Document
-    // await document.transform(
-    //   // Losslessly resample animation frames.
-    //   resample(),
-    //   // Remove unused nodes, textures, or other data.
-    //   prune(),
-    //   // Remove duplicate vertex or texture data, if any.
-    //   dedup(),
-    //   // Compress mesh geometry with Draco.
-    //   draco(),
-    //   //centers the model at the origin
-    //   center({ pivot: "below" }),
-    //   //prduces fewer triangles and meshes
-    //   simplify({ simplifier: MeshoptSimplifier, ratio: 0.2, error: 0.0001 })
-    // );
+    await document.transform(
+      // Losslessly resample animation frames.
+      resample(),
+      // Remove unused nodes, textures, or other data.
+      prune(),
+      // Remove duplicate vertex or texture data, if any.
+      dedup(),
+      // Compress mesh geometry with Draco.
+      draco(),
+      //centers the model at the origin
+      center({ pivot: "below" }),
+      //prduces fewer triangles and meshes
+      simplify({ simplifier: MeshoptSimplifier, ratio: 0.2, error: 0.0001 })
+    );
 
     //creates a json to send for backend (takes time)
     // const data = await io.writeJSON(document); // Creates Gltf Formatted Uint8 data
@@ -95,13 +112,11 @@ app.post("/transform/model", async (req, res) => {
     /************************************/
     //Currently Working on The below method
     /************************************/
-
     //GLB --> GLTF (Sending GLTF approach (worked))
-    // const data = await io.writeBinary(document);
-    // const gltf = await glbToGltf(data);
-    // res.send(gltf.gltf);
-
-    // res.send(Buffer.from(data, "binary"));
+    const data = await io.writeBinary(document);
+    const gltf = await glbToGltf(data);
+    // log(gltf);
+    res.send(gltf.gltf);
 
     //Sending JSON
     // const data = await io.writeJSON(document);
