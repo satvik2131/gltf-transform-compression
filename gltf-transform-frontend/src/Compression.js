@@ -1,9 +1,10 @@
-import React from "react";
-import { Canvas, useLoader } from "@react-three/fiber";
+import { React, useEffect } from "react";
+import { useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "@react-three/drei";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { Center, Bounds, Resize } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
 
 export function Model({ model }) {
   console.log(model);
@@ -82,6 +83,7 @@ export function Model({ model }) {
       <Resize scale={1}>
         <Center>
           <OrbitControls />
+          <GetInfo />
           <ambientLight intensity={0.5} />
           <directionalLight intensity={1} position={[0, 10, 0]} />
           <primitive object={gltf.scene} />
@@ -90,5 +92,16 @@ export function Model({ model }) {
     </Bounds>
   );
 }
+
+//Get Render info
+const GetInfo = () => {
+  const { gl } = useThree();
+  useEffect(() => {
+    // gl === WebGLRenderer
+    // gl.info.calls
+    console.log(gl.info);
+  });
+  return null;
+};
 
 export default Model;
