@@ -84,8 +84,9 @@ app.post("/transform/model", async (req, res) => {
           break;
       }
 
-      //converting gltf to buffer
-      // Read.
+      /**************/
+      // Compression
+      /**************/
       await document.transform(
         // Losslessly resample animation frames.
         resample(),
@@ -103,38 +104,11 @@ app.post("/transform/model", async (req, res) => {
         reorder({ encoder: MeshoptEncoder, level: "medium" })
       );
 
-      //creates a json to send for backend (takes time)
-      // const data = await io.writeJSON(document); // Creates Gltf Formatted Uint8 data
-      // log(data);
-
-      //Sending buffer
-      // const mimetype = "application/octet-stream";
-      // res.writeHead(200, {
-      //   "Content-Type": mimetype,
-      //   // "Content-disposition": "attachment;filename=" + "model.glb",
-      //   "Content-Length": data.length,
-      // });
-      // res.send(Buffer.from(data));
-
-      /************************************/
-      //Currently Working on The below method
-      /************************************/
       //GLB --> GLTF (Sending GLTF approach (worked))
       const data = await io.writeBinary(document);
       const gltf = await glbToGltf(data);
       // log(gltf);
       res.send(gltf.gltf);
-
-      //Sending JSON
-      // const data = await io.writeJSON(document);
-      // log(data);
-      // res.json(JSON.stringify(data));
-
-      //Save As File
-      // fs.writeFile("test2.glb", buffer, (err) => {
-      //   if (err) throw err;
-      //   console.log("The file has been saved!");
-      // });
     });
   } catch (e) {
     res.send(e);
