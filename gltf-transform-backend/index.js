@@ -12,7 +12,6 @@ const {
   join,
   simplify,
   reorder,
-  instance,
 } = require("@gltf-transform/functions");
 const draco3d = require("draco3d");
 const { MeshoptSimplifier } = require("meshoptimizer");
@@ -101,8 +100,7 @@ app.post("/transform/model", async (req, res) => {
         simplify({ simplifier: MeshoptSimplifier, ratio: 0.2, error: 0.0001 }),
         //join compatible primtives and reduce draw calls
         join({ keepNamed: false }),
-        reorder({ encoder: MeshoptEncoder, level: "medium" }),
-        instance({ min: 2 })
+        reorder({ encoder: MeshoptEncoder, level: "medium" })
       );
 
       //creates a json to send for backend (takes time)
